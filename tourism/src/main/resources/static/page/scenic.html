@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <link rel="stylesheet" href="../assets/libs/layui/css/layui.css">
+    <link rel="stylesheet" href="../assets/common.css">
+    <script src="../assets/libs/jquery/jquery-3.2.1.min.js"></script>
+    <script src="../assets/libs/jquery/jquery.cookie.js"></script>
+</head>
+<style>
+    .type{
+        margin-left: 42px;
+        margin-top: -29px;
+    }
+    .head{
+        margin-top: 25px;
+    }
+    .img{
+        width: 220px;
+        height: 150px;
+    }
+    .recommend_item{
+        box-sizing: border-box;
+        border: 1px solid #DCDCDC;
+    }
+    .recommend ul li{
+        display: inline-block;
+    }
+    .abroad ul li{
+        display: inline-block;
+    }
+    .domestic ul li{
+        display: inline-block;
+    }
+
+    .price .num{
+        color:#ff5555;
+        font-size: 19px;
+    }
+    .price .unit{
+        color: #ff5555;
+        font-size: 19px;
+    }
+    #layuibody{
+        left: 50px;
+        top: 10px;
+    }
+    .recommend_item:hover{
+        border: 1px solid #009688;
+    }
+    .abroad_item:hover{
+        border: 1px solid #009688;
+    }
+    .domestic_item:hover{
+        border: 1px solid #009688;
+    }
+</style>
+<body>
+
+<div>
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-body" id="layuibody">
+            <div>
+                <button id="orderList" class="layui-btn">查看订单</button>
+            </div>
+            <div>
+                <div class="head">
+                    <img src="../assets/images/head2.PNG" class="layui-nav-img"><h2 class="type">热门推荐</h2>
+                    <hr class="layui-bg-orange">
+                </div>
+                <div class="recommend" >
+                    <ul style="display:block;" id="recommend">
+
+                    </ul>
+                </div>
+            </div>
+
+            <div>
+                <div class="head">
+                    <img src="../assets/images/head2.PNG" class="layui-nav-img"><h2 class="type">国内游</h2>
+                    <hr class="layui-bg-orange">
+                </div>
+                <div class="domestic">
+                    <ul style="display:block;" id="domestic">
+
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="head">
+                    <img src="../assets/images/head2.PNG" class="layui-nav-img"><h2 class="type">出境游</h2>
+                    <hr class="layui-bg-orange">
+                </div>
+                <div class="abroad">
+                    <ul style="display:block;" id="abroad">
+
+                    </ul>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+</div>
+<!-- 表格操作列 -->
+<script type="text/html" id="tableBar">
+    <a class="layui-btn layui-btn layui-btn-sm" lay-event="edit">修改</a>
+    <a class="layui-btn layui-btn-warm layui-btn-sm" lay-event="del">删除</a>
+</script>
+<script id="recommend_demo" type="text/html">
+    {{#  layui.each(d.data, function(index, item){ }}
+    <li class="recommend_item">
+        <a href="javascript:void(0)" onclick="showDetail({{item.id}})">
+            <span class="cover">
+                <img class="img" src="../assets/images/recommend/{{item.picture}}" style="display: block">
+            </span>
+            <span class="name">{{item.name}}</span><br><br>
+            <span class="price">
+                <span class="unit">¥</span>
+                <span class="num">{{item.price}}</span>
+                <span>起</span>
+            </span>
+            <a href="javascript:void(0)" onclick="showIntroduce({{item.id}})" style="margin-left: 90px;color: #1E9FFF">查看详情</a>
+        </a>
+    </li>
+    {{#  }); }}
+</script>
+<script id="domestic_demo" type="text/html">
+    {{#  layui.each(d.data, function(index, item){ }}
+    <li class="domestic_item">
+        <a href="javascript:void(0)" onclick="showDetail({{item.id}})">
+            <span class="cover">
+                <img class="img" src="../assets/images/recommend/{{item.picture}}" style="display: block">
+            </span>
+            <span class="name">{{item.name}}</span><br><br>
+            <span class="price">
+                <span class="unit">¥</span>
+                <span class="num">{{item.price}}</span>
+                <span>起</span>
+            </span>
+            <a href="javascript:void(0)" onclick="showIntroduce({{item.id}})" style="margin-left: 90px;color: #1E9FFF">查看详情</a>
+        </a>
+    </li>
+    {{#  }); }}
+</script>
+<script id="abroad_demo" type="text/html">
+    {{#  layui.each(d.data, function(index, item){ }}
+    <li class="abroad_item">
+        <a href="javascript:void(0)" onclick="showDetail({{item.id}})">
+            <span class="cover">
+                <img class="img" src="../assets/images/recommend/{{item.picture}}" style="display: block">
+            </span>
+            <span class="name">{{item.name}}</span><br><br>
+            <span class="price">
+                <span class="unit">¥</span>
+                <span class="num">{{item.price}}</span>
+                <span>起</span>
+            </span>
+            <a href="javascript:void(0)" onclick="showIntroduce({{item.id}})" style="margin-left: 90px;color: #1E9FFF">查看详情</a>
+        </a>
+    </li>
+    {{#  }); }}
+</script>
+<!-- 表单弹窗 -->
+<script type="text/html" id="scenicForm">
+    <form lay-filter="scenicForm" class="layui-form model-form">
+        <input id="scenicId" name="scenicId" value="" hidden>
+        <input id="guideId" name="guideId" value="" hidden>
+        <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-block">
+            <!--<input id="name" name="name"  type="text" class="layui-input"/>-->
+            <h1 id="name" name="name"></h1>
+        </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">旅行团队</label>
+            <div class="layui-input-block">
+                <select id="selTeam" name="teamId" xm-select="selTeam" xm-select-skin="default" required>
+                    <option value="">请选择团队</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">参考价格</label>
+            <div class="layui-input-block">
+              <h4 id="price" style="font-size: 22px;color: red;margin-top: 13px"></h4>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">景点介绍</label>
+            <div class="layui-input-block">
+                <textarea id="introduce" name="introduce"  class="layui-textarea" readonly></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">出发时间</label>
+            <div class="layui-input-block">
+                <input id="beginTime" name="startTime"  class="layui-input" required/>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">归来时间</label>
+            <div class="layui-input-block">
+                <input id="endTime" name="endTime"  class="layui-input"/>
+            </div>
+        </div>
+        <div class="layui-form-item text-right">
+            <button class="layui-btn layui-btn-primary" type="button" ew-event="closeDialog">取消</button>
+            <button class="layui-btn" lay-filter="scenicFormSubmit" lay-submit>预订</button>
+        </div>
+    </form>
+</script>
+
+<!-- 表单弹窗 -->
+<script type="text/html" id="scenicIntroduce">
+    <div>
+        <span id="detailed"></span>
+    </div>
+</script>
+<script type="text/html" id="scenicOrders">
+    <table class="layui-table" id="scenicOrdersTable" lay-filter="scenicOrdersTable"></table>
+</script>
+<script src="../assets/libs/layui/layui.js"></script>
+<script type="text/javascript" src="../assets/common.js"></script>
+<script>
+    layui.use(['jquery', 'layer', 'element', 'form', 'admin','laytpl','laydate','table','util'], function(){
+        var element = layui.element;
+        var laytpl=layui.laytpl;
+        var admin = layui.admin;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var form=layui.form;
+        var mTeamNotRepat=[];
+        var mTeams=[];
+        var laydate=layui.laydate;
+        var table=layui.table;
+        var util=layui.util;
+        //…
+        var guidename=$.cookie('guidename');
+        var guideid=$.cookie('id');
+
+        showIntroduce=function (id) {
+            console.log("点击查看详情标签"+id);
+            var data=[];
+            var scenic;
+            admin.req('scenic/queryById', {id:id}, function (res) {
+                layer.closeAll('loading');
+                if (200 == res.code) {
+                    data=res.data;
+                    scenic=data[0];
+                } else {
+                    layer.msg('获取信息失败', {icon: 2});
+                }
+                //点击后弹出一个layer展示景点详情
+                layer.open({
+                    type: 1,
+                    area: ['1200px', '580px'],
+                    offset: '30px',
+                    title: '景点详情',
+                    content: $('#scenicIntroduce').html(),
+                    success: function (layero, index) {
+                        $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                        $('#detailed').text(scenic.introduce);
+
+                    }
+
+                });
+
+            }, 'GET');
+        }
+
+        showDetail=function (id) {
+            console.log("点击a标签"+id);
+            var data=[];
+            var scenic;
+            admin.req('scenic/queryById', {id:id}, function (res) {
+                layer.closeAll('loading');
+                if (200 == res.code) {
+                    data=res.data;
+                    scenic=data[0];
+                    console.log("景点名称："+scenic.name);
+                    console.log("景点介绍："+scenic.introduce);
+                } else {
+                    layer.msg('获取信息失败', {icon: 2});
+                }
+                //点击后弹出一个layer预订酒店
+                layer.open({
+                    type: 1,
+                    area: '700px',
+                    offset: '65px',
+                    title: '景点预订',
+                    content: $('#scenicForm').html(),
+                    success: function (layero, index) {
+                        $(layero).children('.layui-layer-content').css('overflow', 'visible');
+
+                        $('#introduce').val(scenic.introduce);
+                        $('#name').text(scenic.name);
+                        $('#price').text(scenic.price+"元/人");
+                        $('#scenicId').val(scenic.id);
+                        $('#guideId').val(guideid);
+                        //渲染团队选项
+                        var teamSelData=new Array();
+                        for (var i=0;i<mTeamNotRepat.length;i++){
+                            teamSelData.push({name:mTeamNotRepat[i].teamName,value:mTeamNotRepat[i].id});
+                        }
+                        for(var i=0;i<teamSelData.length;i++){
+                            $('#selTeam').append("<option value='"+teamSelData[i].value+"'>"+teamSelData[i].name+"</option>");
+                        }
+                        form.render('select');
+                        // 表单提交事件
+                        form.on('submit(scenicFormSubmit)', function (d) {
+                            //d.field.roleIds = formSelects.value('selRole', 'valStr');
+                            layer.load(2);
+                            admin.req('scenicOrder/insert', d.field, function (res) {
+                                layer.closeAll('loading');
+                                if (res.code == 200) {
+                                    layer.msg(res.msg, {icon: 1});
+                                    layer.closeAll('page');
+                                    location.reload();
+                                } else {
+                                    layer.msg(res.msg, {icon: 2});
+                                }
+                            },'PUT');
+                            return false;
+                        });
+                    }
+
+                });
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#beginTime'//指定元素
+
+                });
+                //执行一个laydate实例
+                laydate.render({
+                    elem: '#endTime' //指定元素
+                });
+            }, 'GET');
+
+
+        };
+
+        //监听查看订单按钮点击
+        $('#orderList').click(function () {
+            //弹出layer展示订单
+            layer.open({
+                type: 1,
+                area: '1200px',
+                offset: '30px',
+                title: '景点订单',
+                content: $('#scenicOrders').html(),
+                success:function (layero, index) {
+                    $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                    //渲染表格
+                    table.render({
+                        elem: '#scenicOrdersTable',
+                        height:530,
+                        url: base_server + 'scenicOrder/query',
+                        method: 'post',
+                        where: {
+                            guideId:guideid
+                        },
+                        page: true,
+                        cellMinWidth: 100,
+                        cols: [[
+                            {type: 'numbers'},
+                            {field: 'scenicName', title: '景点名称'},
+                            {field: 'teamName', title: '团队名称'},
+                            {field: 'guideName', title: '导游名称'},
+                            {field: 'startTime', title: '出发日期'},
+                            {field: 'endTime', title: '归回日期'},
+                            {field: 'price', title: '总价'},
+                            {
+                                templet: function (d) {
+                                    return util.toDateString(d.createTime);
+                                }, title: '创建时间',width:200
+                            },
+                            {align: 'center', toolbar: '#tableBar', title: '操作', unresize: true, width: 200}
+                        ]],
+                        skin: 'line',
+                        size: 'lg'
+                    });
+
+                }
+            });
+        });
+
+        // 工具条点击事件
+        table.on('tool(scenicOrdersTable)', function (obj) {
+            var data = obj.data;
+            var layEvent = obj.event;
+
+            if (layEvent === 'del') { // 删除
+                layer.confirm('确定删除订单吗？', function (i) {
+                    layer.close(i);
+                    layer.load(2);
+                    admin.req('scenicOrder/delete/' + obj.data.id, {}, function (data) {
+                        layer.closeAll('loading');
+                        if (data.code == 200) {
+                            layer.msg(data.msg, {icon: 1});
+                            obj.del();
+                        } else {
+                            layer.msg(data.msg, {icon: 2});
+                        }
+                    }, 'DELETE');
+                });
+            } else if (layEvent === 'edit') { // 修改
+                showEditModel(data);
+            }
+        });
+        // 显示表单弹窗
+        function showEditModel(data) {
+            console.log(data);
+            layer.open({
+                type: 1,
+                area: '400px',
+                offset: '65px',
+                title: '修改订单信息',
+                content: $('#scenicForm').html(),
+                success: function (layero, index) {
+                    $(layero).children('.layui-layer-content').css('overflow', 'visible');
+                    form.render();
+                    //渲染团队选项
+                    var teamSelData=new Array();
+                    for (var i=0;i<mTeams.length;i++){
+                        teamSelData.push({name:mTeams[i].teamName,value:mTeams[i].id});
+                    }
+                    for(var i=0;i<teamSelData.length;i++){
+                        $('#selTeam').append("<option value='"+teamSelData[i].value+"'>"+teamSelData[i].name+"</option>");
+                    }
+                    form.render('select');
+                    // 回显team数据
+                    if (data) {
+                        console.log(data);
+                        form.val('scenicForm', data);
+                        $('#name').text(data.scenicName);
+                        $('#price').text(data.price+"元/人");
+                    }
+                    form.render();
+                    // 表单提交事件
+                    form.on('submit(scenicFormSubmit)', function (d) {
+                        layer.load(2);
+                        admin.req('scenicOrder/update', d.field, function (res) {
+                            layer.closeAll('loading');
+                            if (res.code == 200) {
+                                layer.msg(res.msg, {icon: 1});
+                                layer.closeAll('page');
+                                table.reload('scenicOrdersTable');
+                            } else {
+                                layer.msg(res.msg, {icon: 2});
+                            }
+                        },'PUT');
+                        return false;
+                    });
+                }
+
+            });
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#beginTime'//指定元素
+
+            });
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#endTime' //指定元素
+            });
+        }
+
+        console.log("发送ajax请求");
+        admin.req('scenic/queryRecommend', {}, function (res) {
+            layer.closeAll('loading');
+            if (200 == res.code) {
+                console.log("res:"+res);
+                var recommend_demo=document.getElementById('recommend_demo');
+                var getTpl = recommend_demo.innerHTML
+                    ,view = document.getElementById('recommend');
+                console.log(recommend_demo);
+                laytpl(getTpl).render(res, function(html){
+                    view.innerHTML = html;
+                });
+            } else {
+                layer.msg('获取信息失败', {icon: 2});
+            }
+        }, 'GET');
+
+        admin.req('scenic/queryDomestic', {}, function (res) {
+            layer.closeAll('loading');
+            if (200 == res.code) {
+                console.log("res:"+res);
+                var recommend_demo=document.getElementById('domestic_demo');
+                var getTpl = recommend_demo.innerHTML
+                    ,view = document.getElementById('domestic');
+                console.log(recommend_demo);
+                laytpl(getTpl).render(res, function(html){
+                    view.innerHTML = html;
+                });
+            } else {
+                layer.msg('获取信息失败', {icon: 2});
+            }
+        }, 'GET');
+
+        admin.req('scenic/queryAbroad', {}, function (res) {
+            layer.closeAll('loading');
+            if (200 == res.code) {
+                console.log("res:"+res);
+                var recommend_demo=document.getElementById('abroad_demo');
+                var getTpl = recommend_demo.innerHTML
+                    ,view = document.getElementById('abroad');
+                console.log(recommend_demo);
+                laytpl(getTpl).render(res, function(html){
+                    view.innerHTML = html;
+                });
+            } else {
+                layer.msg('获取信息失败', {icon: 2});
+            }
+        }, 'GET');
+
+        admin.req('team/queryNotRepact', {guideId:guideid}, function (res) {
+            layer.closeAll('loading');
+            if (200 == res.code) {
+                mTeamNotRepat=res.data;
+                for(var i=0;i<mTeamNotRepat.length;i++) {
+                    console.log("去重后团队:"+mTeamNotRepat[i].teamName);
+                }
+            } else {
+                layer.msg('获取信息失败', {icon: 2});
+            }
+        }, 'GET');
+
+
+        admin.req('team/queryAllTeamByGuideId', {guideId:guideid}, function (res) {
+            layer.closeAll('loading');
+            if (200 == res.code) {
+                mTeams=res.data;
+                for(var i=0;i<mTeams.length;i++) {
+                    console.log("团队:"+mTeams[i].teamName);
+                }
+            } else {
+                layer.msg('获取信息失败', {icon: 2});
+            }
+        }, 'GET');
+
+
+    });
+</script>
+</body>
+</html>
